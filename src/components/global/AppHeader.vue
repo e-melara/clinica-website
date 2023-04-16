@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar app style="height: 75px" :elevation="0" color="bgWhite" prominent>
+  <v-app-bar app style="height: 75px" :elevation="0" prominent>
     <v-col cols="6" class="d-flex flex-rows align-center" v-if="$vuetify.breakpoint.width > 338">
       <v-app-bar-nav-icon @click.stop="setDrawer"></v-app-bar-nav-icon>
     </v-col>
@@ -37,8 +37,12 @@ export default {
     };
   },
   methods: {
+    ...mapMutations(['logout']),
     ...mapMutations('utils', ['setSideBar', 'setMenu', 'setMiniVariant']),
-    async cerrarSession() {},
+    async cerrarSession() {
+      this.logout();
+      this.$router.replace('/login');
+    },
     setDrawer() {
       if (this.$vuetify.breakpoint.mobile) {
         if (this.miniVariant) {

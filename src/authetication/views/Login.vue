@@ -44,9 +44,7 @@
               </v-card-text>
               <v-row>
                 <v-col cols="12" md="6" class="flex justify-center text-center">
-                  <v-btn color="blueMinsal white--text px-sm-8" :loading="loading" type="submit">
-                    entrar
-                  </v-btn>
+                  <v-btn block color="primary" :loading="loading" type="submit"> entrar </v-btn>
                 </v-col>
               </v-row>
             </v-form>

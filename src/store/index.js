@@ -15,6 +15,13 @@ export default new Vuex.Store({
     isAuthenticate: false,
   },
   mutations: {
+    logout(state) {
+      state.roles = [];
+      state.rutas = [];
+      state.userInfo = {};
+      state.isAuthenticate = false;
+      localStorage.clear();
+    },
     setAuth(state, payload) {
       const { token, user } = payload;
       const decoded = jwtDecode(token);
