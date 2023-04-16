@@ -8,7 +8,7 @@
         <template v-slot:activator="{ on, attrs }">
           <v-btn v-bind="attrs" v-on="on" elevation="" small>
             <v-icon>mdi-chevron-down</v-icon>
-            Edwin Melara Landaverde
+            {{ getNombrePersona }}
           </v-btn>
         </template>
         <v-list dense nav>
@@ -58,6 +58,11 @@ export default {
       sideBar: 'sideBar',
       miniVariant: 'miniVariant',
     }),
+    ...mapState(['userInfo']),
+    getNombrePersona() {
+      const { nombre, apellido } = this.userInfo.persona;
+      return `${nombre} ${apellido}`;
+    },
   },
 };
 </script>

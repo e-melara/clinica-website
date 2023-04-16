@@ -30,7 +30,6 @@
           </template>
         </v-snackbar>
       </v-fade-transition>
-
       <router-view :key="$route.fullPath" />
     </v-main>
   </v-app>
@@ -47,6 +46,5 @@ export default {
       alert: "utils/getAlert",
     }),
   },
-
 };
 </script>

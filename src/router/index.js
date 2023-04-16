@@ -9,7 +9,13 @@ const routes = [
   {
     path: '/',
     component: () => import(/* webpackChunkName: "layout" */ '../components/Layout.vue'),
-    children: [],
+    children: [
+      {
+        path: '',
+        name: 'Home',
+        component: () => import(/* webpackChunkName: "home" */ '../views/HomePage.vue'),
+      },
+    ],
   },
   ...AutheticationRoute,
 ];

@@ -7,6 +7,8 @@ import vuetify from './plugins/vuetify';
 import { utils } from './plugins/utils';
 import loadComponents from './plugins/loadComponents';
 
+import './assets/css/main.scss';
+
 Vue.config.productionTip = false;
 loadComponents(Vue);
 

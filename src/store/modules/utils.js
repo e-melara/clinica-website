@@ -9,7 +9,7 @@ export const utilStore = {
     },
     loader: false,
     sideBar: true,
-    miniVariant: false,
+    miniVariant: true,
   },
   getters: {
     getAlert: (state) => {

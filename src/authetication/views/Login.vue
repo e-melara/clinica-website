@@ -8,7 +8,7 @@
             <p class="text-center text-h5 blueGrayMinsal--text">Iniciar sesión</p>
             <p class="text-center blueGrayMinsal--text">Ingrese su usuario y contraseña</p>
             <v-form
-              @submit.prevent="login()"
+              @submit.prevent="submitLogin()"
               autocomplete="off"
               ref="form"
               v-model="valid"
@@ -21,8 +21,8 @@
                   outlined
                   label="Usuario *"
                   type="text"
-                  v-model="form.email"
-                  :rules="[() => !!form.email || 'El usuario es requerido']"
+                  v-model="form.usuario"
+                  :rules="[rules.required, rules.min, rules.max]"
                 >
                 </v-text-field>
                 <v-text-field
@@ -32,7 +32,7 @@
                   v-model="form.password"
                   label="Contraseña *"
                   :type="showPassword ? 'text' : 'password'"
-                  :rules="[() => !!form.email || 'La contraseña es requerida']"
+                  :rules="[rules.required, rules.min, rules.max]"
                 >
                   <template #append>
                     <v-icon v-if="!showPassword" @click="showPassword = !showPassword">
@@ -60,12 +60,14 @@
 <script lang="js">
 import Logo from '../../assets/images/logo/logo.png';
 import Background from "../../assets/images/login/login_bg.jpg";
+import { mapActions } from 'vuex';
 
 export default {
   name: "LoginComponent",
   data: () => ({
+    rules: {},
     form: {
-      email: null,
+      usuario: null,
       password: null,
     },
     Logo,
@@ -75,9 +77,18 @@ export default {
     showPassword: false,
   }),
   methods: {
-    async login() {
+    ...mapActions(["login"]),
+    async submitLogin() {
       if(!this.$refs.form.validate()) return;
+      this.login({ ...this.form }).then((response) => {
+        if (response) {
+          this.$router.push({ name: "Home" });
+        }
+      });
     },
+  },
+  created() {
+    this.rules = {...this.rulesValidations}
   },
 };
 </script>
