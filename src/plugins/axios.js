@@ -13,7 +13,7 @@ authApi.interceptors.request.use(
     if (config.headers) {
       const token = window.localStorage.getItem('token');
       if (token) {
-        config.headers.Authorization = `Bearer ${JSON.parse(token)}`;
+        config.headers.Authorization = `Bearer ${token}`;
       }
       config.headers['Content-Type'] = 'application/json';
     }

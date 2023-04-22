@@ -13,6 +13,8 @@
                 :items="items.data"
                 :rules="items.rules"
                 :label="items.label"
+                item-text="nombre"
+                item-value="id"
                 required
               ></v-select>
             </v-col>
@@ -55,7 +57,7 @@
         </thead>
         <tbody v-if="list.length > 0">
           <tr v-for="item in list" :key="item.id">
-            <td>{{ item.tipo }}</td>
+            <td>{{ getTipoId(item.tipo) }}</td>
             <td>{{ item.numero }}</td>
             <td style="width: 80px" class="text-center">
               <v-icon @click="deleteItem(item)"> mdi-delete </v-icon>
@@ -108,6 +110,10 @@ export default {
         numero: this.numero
       });
       this.$refs.form.reset();
+    },
+    getTipoId(id) {
+      const { data } = this.items;
+      return data.find(item => id === item.id)?.nombre || '';
     },
     deleteItem({ id }) {
       this.list = this.list.filter(item => id !== item.id);

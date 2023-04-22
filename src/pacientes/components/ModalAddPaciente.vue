@@ -1,8 +1,8 @@
 <template>
-  <v-dialog :value="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
+  <v-dialog :value="dialog" transition="dialog-bottom-transition">
     <v-card>
       <v-toolbar dark color="primary">
-        <v-btn icon dark @click="$emit('closeOrSave', { type: 'close' })">
+        <v-btn :disabled="valid" icon dark @click="$emit('closeOrSave', { type: 'close' })">
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-toolbar-title>Agregar paciente</v-toolbar-title>
@@ -17,25 +17,25 @@
             <v-row>
               <v-col cols="12" sm="6" md="6">
                 <v-text-field
-                  v-model="forms.nombres"
+                  v-model="forms.nombre"
                   outlined
                   :counter="50"
                   label="Nombres"
                   required
                   filled
-                  :rules="[rules.required, rules.maxInput(50, forms.nombres), rules.alphaSpace]"
+                  :rules="[rules.required, rules.maxInput(50, forms.nombre), rules.alphaSpace]"
                 ></v-text-field>
               </v-col>
 
               <v-col cols="12" sm="6" md="6">
                 <v-text-field
-                  v-model="forms.apellidos"
+                  v-model="forms.apellido"
                   filled
                   outlined
                   :counter="50"
                   label="Apellidos"
                   required
-                  :rules="[rules.required, rules.maxInput(50, forms.apellidos), rules.alphaSpace]"
+                  :rules="[rules.required, rules.maxInput(50, forms.apellido), rules.alphaSpace]"
                 ></v-text-field>
               </v-col>
 
@@ -61,10 +61,10 @@
                       v-on="on"
                     ></v-text-field>
                   </template>
-                  <v-date-picker v-model="forms.fechaNacimiento" locale="es-sv" :max="maxDate">
+                  <v-date-picker v-model="forms.fecha_nacimiento" locale="es-sv" :max="maxDate">
                     <v-spacer></v-spacer>
                     <v-btn text color="primary" @click="menu = false"> Cancel </v-btn>
-                    <v-btn text color="primary" @click="$refs.menu.save(forms.fechaNacimiento)">
+                    <v-btn text color="primary" @click="$refs.menu.save(forms.fecha_nacimiento)">
                       OK
                     </v-btn>
                   </v-date-picker>
@@ -79,17 +79,24 @@
                   v-model="forms.genero"
                   label="Genero"
                   required
+                  :items="generos"
+                  item-value="id"
+                  item-text="nombre"
                 ></v-select>
               </v-col>
 
               <v-col cols="12" sm="6" md="6">
                 <v-select
                   outlined
+                  :items="departamentos"
+                  item-value="id"
+                  item-text="nombre"
                   :rules="[rules.required]"
                   v-model="forms.departamento"
                   label="Departamento"
                   required
                   filled
+                  @change="changeDepartamento"
                 ></v-select>
               </v-col>
 
@@ -97,10 +104,14 @@
                 <v-select
                   filled
                   outlined
-                  v-model="forms.municipio"
-                  label="Municipio"
                   required
+                  item-value="id"
+                  item-text="nombre"
+                  label="Municipio"
+                  :items="municipios"
+                  v-model="forms.municipio"
                   :rules="[rules.required]"
+                  :disabled="municipios.length === 0"
                 ></v-select>
               </v-col>
             </v-row>
@@ -115,12 +126,14 @@
             ></v-textarea>
             <v-divider></v-divider>
             <TableContactoAndDocumento
-              :items="itemsDocumentos"
+              ref="tableContacto"
+              :items="itemsContactos"
               :txt-label-options="labelObj"
               title="contactos del paciente"
             />
             <v-divider></v-divider>
             <TableContactoAndDocumento
+              ref="tableDocumento"
               :items="itemsDocumentos"
               :txt-label-options="labelObj"
               title="Documentos del paciente"
@@ -148,19 +161,18 @@ export default {
     valid: false,
     labelObj: {
       label: 'Digite el numero del contacto',
-      //TODO: pendiente la validacion de los numeros
       rules: []
     },
     maxDate: new Date().toISOString().substr(0, 10),
     forms: {
-      nombres: '',
-      apellidos: '',
-      fechaNacimiento: '',
+      nombre: '',
+      apellido: '',
+      fecha_nacimiento: '',
       departamento: '',
       genero: '',
       municipio: '',
       direccion: '',
-      contactons: [],
+      contactos: [],
       documentos: [],
     }
   }),
@@ -169,10 +181,30 @@ export default {
       type: Boolean,
       default: false,
     },
+    departamentos: {
+      type: Array,
+      default: () => [],
+    },
+    generos: {
+      type: Array,
+      default: () => [],
+    },
+    contactos: {
+      type: Array,
+      default: () => [],
+    },
+    documentos: {
+      type: Array,
+      default: () => [],
+    },
+    municipios: {
+      type: Array,
+      default: () => [],
+    },
   },
   computed: {
     fechaNacimiento() {
-      const {fechaNacimiento} = this.forms;
+      const { fecha_nacimiento:fechaNacimiento} = this.forms;
       if(!fechaNacimiento) {
         return ''
       }
@@ -184,19 +216,42 @@ export default {
       return {
         label: 'Seleccione el tipo de documento',
         rules: [this.rules.required],
-        data: [
-        'Item 1',
-        'Item 2',
-        'Item 3',
-        'Item 4',
-      ],
+        data: this.documentos,
+      }
+    },
+    itemsContactos() {
+      return {
+        label: 'Seleccione el tipo de contacto',
+        rules: [this.rules.required],
+        data: this.contactos
       }
     }
   },
   methods: {
     validateForm() {
-      if (this.$refs.form.validate()) {
-        alert('Form Submitted!');
+      if (!this.$refs.form.validate()) {
+        this.$store.commit('utils/setAlert', {
+          show: true,
+          type: 'error',
+          message: 'Por favor, verifique los campos marcados en rojo'
+        }, {root: true});
+        return;
+      }
+      const {departamento, ...forms} = this.forms;
+      console.log({ departamento })
+      const contactos = this.$refs.tableContacto.getItems();
+      const documentos = this.$refs.tableDocumento.getItems();
+
+      forms.contactos = contactos.map(({ numero, tipo}) => ({ numero, id: tipo }));
+      forms.documentos = documentos.map(({ numero, tipo}) => ({ numero, id: tipo }));
+      this.$refs.form.resetValidation();
+      this.$emit('closeOrSave', { type: 'save', forms });
+    },
+    changeDepartamento() {
+      const {departamento} = this.forms;
+      if(departamento) {
+        this.forms.municipio = null;
+        this.$emit('change-departamento', departamento);
       }
     },
   },
