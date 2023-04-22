@@ -28,7 +28,8 @@ authApi.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    const errMessage = error.response.data.message;
+    console.log({ error });
+    const errMessage = error.response?.data?.message;
     if (errMessage.includes('not logged in') && !originalRequest._retry) {
       originalRequest._retry = true;
       // await refreshAccessTokenFn()

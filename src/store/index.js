@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 import jwtDecode from 'jwt-decode';
 
 import authApi from '../plugins/axios';
-import { utilStore } from './modules';
+import { utilStore, pacientStore } from './modules';
 
 Vue.use(Vuex);
 
@@ -69,5 +69,6 @@ export default new Vuex.Store({
   },
   modules: {
     utils: utilStore,
+    pacient: pacientStore,
   },
 });

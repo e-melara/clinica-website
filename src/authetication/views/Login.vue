@@ -86,6 +86,7 @@ export default {
     },
   },
   created() {
+    localStorage.clear();
     this.rules = {...this.rulesValidations}
   },
 };

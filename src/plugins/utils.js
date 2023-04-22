@@ -16,5 +16,12 @@ export const utils = (store) => {
     max: (v) => (v && v.length <= 14) || 'El máximo de caracteres es 14',
     alphaNumeric: (v) =>
       /^[a-zA-Z0-9]*$/.test(v) || 'El campo solo puede contener letras y números',
+    numeric: (v) => /^[a-zA-Z0-9]\s*$/.test(v) || 'El campo solo puede contener letras y números',
+    alpha: (v) => /^[a-zA-Z]\s*$/.test(v) || 'El campo solo puede contener letras',
+    maxInput: (max, v) =>
+      (v && v.length <= parseInt(max)) || `El máximo de caracteres es de ${max}`,
+    minInput: (min, v) =>
+      (v && v.length >= parseInt(min)) || `El mínimo de caracteres es de ${min}`,
+    alphaSpace: (v) => /^[a-zA-Z\s]*$/.test(v) || 'El campo solo puede contener letras',
   };
 };

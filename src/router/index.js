@@ -2,7 +2,8 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import jsonDecode from 'jwt-decode';
 
-import AutheticationRoute from '../authetication/router';
+import autheticationRoute from '../authetication/router';
+import pacientesRoute from '../pacientes/routers';
 
 Vue.use(VueRouter);
 
@@ -18,7 +19,8 @@ const routes = [
       },
     ],
   },
-  ...AutheticationRoute,
+  ...autheticationRoute,
+  ...pacientesRoute,
   { path: '*', redirect: 'login' },
 ];
 
