@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 import authApi from '../../plugins/axios';
 
 export const pacientStore = {
@@ -11,6 +13,13 @@ export const pacientStore = {
     municipios: [],
     loading: false,
     departamentos: [],
+
+    list: [],
+    pagination: {
+      total: 0,
+      pagina: 1,
+      cantidad_por_pagina: 10,
+    },
   },
   mutations: {
     setOpen(state, payload) {
@@ -30,9 +39,42 @@ export const pacientStore = {
       state.documentos = documentos?.data;
       state.departamentos = departamentos?.data;
     },
+    setList(state, { items, meta }) {
+      state.list = items.map((item, index) => {
+        const fechaNacimiento = moment(item.paciente.fechaNacimiento);
+        fechaNacimiento.locale('es-sv');
+        return {
+          edad: fechaNacimiento.fromNow(),
+          id: index + 1,
+          codigo: item.paciente.numeroExpendiente,
+          fecha_nacimiento: moment(item.paciente.fechaNacimiento).format('DD/MM/YYYY'),
+          nombre_del_paciente: `${item.nombre} ${item.apellido}`,
+        };
+      });
+      state.pagination = {
+        total: meta.total,
+        pagina: meta.pagina,
+        cantidad_por_pagina: meta.cantidad_por_pagina,
+      };
+    },
   },
   actions: {
-    async getInfo({ commit }) {
+    async getList({ commit }, { pagina, cantidad_por_pagina, q = '' }) {
+      try {
+        commit('utils/setLoader', true, { root: true });
+        const { data } = await authApi.get(
+          `/api/pacientes?pagina=${pagina}&cantidad_por_pagina=${cantidad_por_pagina}&q=${q}`
+        );
+        commit('utils/setLoader', false, { root: true });
+        commit('setList', data);
+      } catch (error) {
+        console.log({ error });
+      } finally {
+        commit('utils/setLoader', false, { root: true });
+      }
+    },
+    async getInfo({ commit, state }) {
+      if (state.loader) return Promise.resolve();
       try {
         commit('utils/setLoader', true, { root: true });
         const params = await Promise.all([
@@ -42,6 +84,7 @@ export const pacientStore = {
           authApi.get('/api/customs/contactos'),
         ]);
         commit('settearData', params);
+        return Promise.resolve();
       } catch (error) {
         console.log({ error });
       } finally {

@@ -15,7 +15,7 @@
     no-data-text="No se encontraron resultados"
     :footer-props="{
       showFirstLastPages: true,
-      'items-per-page-options': [5, 10, 15],
+      'items-per-page-options': [2, 5, 10, 15],
       'items-per-page-text': 'Número de registros',
     }"
     :hide-default-footer="footerDisabled"
