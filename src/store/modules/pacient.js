@@ -1,6 +1,7 @@
 import moment from 'moment';
 
 import authApi from '../../plugins/axios';
+import { calculaEdad } from '../../plugins/utils';
 
 export const pacientStore = {
   namespaced: true,
@@ -41,14 +42,13 @@ export const pacientStore = {
     },
     setList(state, { items, meta }) {
       state.list = items.map((item, index) => {
-        const fechaNacimiento = moment(item.paciente.fechaNacimiento);
-        fechaNacimiento.locale('es-sv');
         return {
-          edad: fechaNacimiento.fromNow(),
-          id: index + 1,
-          codigo: item.paciente.numeroExpendiente,
-          fecha_nacimiento: moment(item.paciente.fechaNacimiento).format('DD/MM/YYYY'),
+          id: item.id,
+          index: index + 1,
+          codigo: item.numero_expendiente,
+          edad: calculaEdad(item.fechaNaacimiento),
           nombre_del_paciente: `${item.nombre} ${item.apellido}`,
+          fecha_nacimiento: moment(item.fechaNaacimiento).format('DD/MM/YYYY'),
         };
       });
       state.pagination = {
@@ -63,7 +63,7 @@ export const pacientStore = {
       try {
         commit('utils/setLoader', true, { root: true });
         const { data } = await authApi.get(
-          `/api/pacientes?pagina=${pagina}&cantidad_por_pagina=${cantidad_por_pagina}&q=${q}`
+          `/api/pacientes?pagina=${pagina}&cantidad_por_pagina=${cantidad_por_pagina}&q=${q}&orden=DESC`
         );
         commit('utils/setLoader', false, { root: true });
         commit('setList', data);

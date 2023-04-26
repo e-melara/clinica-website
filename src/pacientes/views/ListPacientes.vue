@@ -74,7 +74,7 @@ export default {
         text: '#',
         align: 'start',
         sortable: false,
-        value: 'id',
+        value: 'index',
       }, {
         text: 'Codigo',
         align: 'start',
@@ -124,7 +124,7 @@ export default {
       }
       this.save({...forms}).then(() => {
         this.setOpen(false)
-        // TODO: que actualice la lista
+        this.onSearch()
       });
     },
     onSearch() {
@@ -133,7 +133,7 @@ export default {
       }
       this.setTimeout = setInterval(() => {
         this.getList({
-          q: this.q,
+          q: this.q || '',
           pagina: 1,
           cantidad_por_pagina: this.pagination.cantidad_por_pagina
         })
