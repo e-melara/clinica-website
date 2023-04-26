@@ -11,6 +11,15 @@ const routes = [
           rol: 'ROL_PATIENTS_VIEW_LIST',
         },
       },
+      {
+        path: ':id/historial',
+        name: 'patients-historial-clinico',
+        component: () =>
+          import(/* webpackChunkName: "LoginPage" */ './views/AddHistorialClinico.vue'),
+        meta: {
+          rol: 'ROL_PATIENTS_VIEW_LIST',
+        },
+      },
     ],
   },
 ];

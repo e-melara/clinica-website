@@ -15,21 +15,21 @@
     no-data-text="No se encontraron resultados"
     :footer-props="{
       showFirstLastPages: true,
-      'items-per-page-options': [2, 5, 10, 15],
+      'items-per-page-options': [5, 10, 15],
       'items-per-page-text': 'Número de registros',
     }"
     :hide-default-footer="footerDisabled"
   >
-    <!-- <template v-slot:[item.options]="{ item }">
+    <template v-slot:[`item.options`]="{ item }">
       <slot name="options" :item="item" />
-    </template> -->
+    </template>
 
-    <!-- Para los headers de la tabla  -->
-    <!-- <template v-for="{ value } in getHeadersCreator" v-slot:[item.${value}]="{ item }">
+    <template v-for="{ value } in getHeadersCreator" v-slot:[`item.${value}`]="{ item }">
       <slot :name="value" :item="item">
         {{ item[value] }}
       </slot>
-    </template> -->
+    </template>
+
     <!--  Slot top  -->
     <template v-slot:top>
       <slot name="top" />

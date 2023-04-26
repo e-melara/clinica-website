@@ -43,6 +43,11 @@
                 </v-row>
               </v-container>
             </template>
+            <template #options="{ item }">
+              <v-btn class="mx-2" dark color="indigo" small @click="addHistorialClinico(item)">
+                <v-icon dark> mdi-plus </v-icon> Historial clinico
+              </v-btn>
+            </template>
           </App-Table>
         </v-card>
       </v-col>
@@ -103,6 +108,9 @@ export default {
   methods: {
     ...mapMutations('pacient', ['setOpen']),
     ...mapActions('pacient', ['getInfo', 'getMunicipios', 'save', 'getList']),
+    addHistorialClinico({id}) {
+      this.$router.replace({ name: 'patients-historial-clinico', params: { id }})
+    },
     updatePagination({page, itemsPerPage}) {
       this.getList({
         pagina: page,
