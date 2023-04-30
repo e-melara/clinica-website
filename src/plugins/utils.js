@@ -25,6 +25,15 @@ export const utils = (store) => {
       (v && v.length >= parseInt(min)) || `El mínimo de caracteres es de ${min}`,
     alphaSpace: (v) => /^[a-zA-Z\s]*$/.test(v) || 'El campo solo puede contener letras',
   };
+
+  Vue.prototype.yearsSelect = () => {
+    const years = [];
+    const currentYear = new Date().getFullYear();
+    for (let i = currentYear; i >= 1940; i--) {
+      years.push(i);
+    }
+    return years;
+  };
 };
 
 export const calculaEdad = (fechaNacimiento) => {

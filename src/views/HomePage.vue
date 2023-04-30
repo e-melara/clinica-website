@@ -1,5 +1,5 @@
 <template>
-  <h2>View Pagina</h2>
+  <div></div>
 </template>
 
 <script lang="js">
