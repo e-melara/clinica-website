@@ -13,7 +13,12 @@
     </v-row>
     <v-form ref="form" v-model="valid" lazy-validation @submit="handlerSubmit">
       <v-row v-if="!notPoseeAntecedentes">
-        <v-col v-for="(item, index) in inputs" :key="index" :cols="item.span || 3">
+        <v-col
+          class="d-flex justify-end"
+          v-for="(item, index) in inputs"
+          :key="index"
+          :cols="item.span || 6"
+        >
           <v-radio-group
             v-model="item.value"
             :key="item.key"
@@ -41,10 +46,10 @@ const inputs = ([
   { key: 2, label: 'Diabetes Mellitus', value: false },
   { key: 3, label: 'Asma bronquial', value: false },
   { key: 10, label: 'Cancer de próstata', value: false },
-  { key: 4, label: 'Trastornos mentales y de comportamiento', value: false, span: 4 },
-  { key: 5, label: 'Enfermedad pulmonar obstructiva crónica (EPOC)', value: false, span: 4 },
-  { key: 6, label: 'Enfermedad Renal Crónica (ERC)', value: false, span: 4 },
-  { key: 7, label: 'Otras enfermedades cardiovasculares (Excepto HTA)', value: false, span: 6},
+  { key: 4, label: 'Trastornos mentales y de comportamiento', value: false },
+  { key: 5, label: 'Enfermedad pulmonar obstructiva crónica (EPOC)', value: false },
+  { key: 6, label: 'Enfermedad Renal Crónica (ERC)', value: false },
+  { key: 7, label: 'Otras enfermedades cardiovasculares (Excepto HTA)', value: false},
   { key: 8, label: 'Cancer Gástrico', value: false },
   { key: 9, label: 'Cancer Colorrectal', value: false },
 ])
