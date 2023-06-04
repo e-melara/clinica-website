@@ -66,7 +66,7 @@ export default {
       if(this.$refs.form.validate()) {
         if(!this.notPoseeAntecedentes) {
           let validateOnly = this.step.preguntas.filter(({ show }) => show);
-          if(!validateOnly) {
+          if(validateOnly.length === 0) {
             this.$store.commit('utils/setAlert', {
               show: true,
               type: 'error',
@@ -76,7 +76,7 @@ export default {
           }
           response = validateOnly.map(({codigo, id, inputs}) => ({ id, codigo, inputs }))
         } else {
-          response = [{ id: 27, codigo: 'P27' }]
+          response = [{ id: '27', codigo: 'P27' }]
         }
         this.$emit('save', { data: response, step: this.step.id })
       }

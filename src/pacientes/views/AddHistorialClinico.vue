@@ -60,7 +60,7 @@ export default {
     ...mapActions('pacient', ['getHistorial', 'saveStepPaciente']),
     save({step, data}) {
       const { id } = this.$route.params;
-      this.saveStepPaciente({ paciente_id: id, step_id: step, forms: data})
+      this.saveStepPaciente({ is_new: true, paciente_id: id, step_id: step, forms: data})
     }
   },
   watch: {

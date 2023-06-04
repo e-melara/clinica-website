@@ -65,7 +65,7 @@ export default {
         }
         response = validateOnly.map(({id, codigo}) => ({id, codigo}))
       } else {
-        response = [{ id: 27, codigo: 'P27' }]
+        response = [{ id: '27', codigo: 'P27' }]
       }
       this.$emit('save', { data: response, step: this.step.id })
     },

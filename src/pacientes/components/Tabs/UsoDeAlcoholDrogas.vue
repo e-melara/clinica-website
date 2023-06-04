@@ -45,15 +45,17 @@ export default {
       if(this.$refs.form.validate()) {
         if(!this.notPoseeAntecedentes) {
           let validateOnly = this.step.preguntas.filter(({valor}) => valor === '1')
-          if(!validateOnly) {
-            this.$store.commit('utils/setAlert', {
-              show: true,
-              type: 'error',
-              message: 'Debe seleccionar por lo menos una opción, sino seleccione que "No posee antecedentes"',
-            })
-            return;
+          if(validateOnly.length === 0) {
+            // this.$store.commit('utils/setAlert', {
+            //   show: true,
+            //   type: 'error',
+            //   message: 'Debe seleccionar por lo menos una opción, sino seleccione que "No posee antecedentes"',
+            // })
+            // return;
+            response = [{ id: '27', codigo: 'P27' }]
+          } else {
+            response = validateOnly.map(({id, codigo}) => ({id, codigo}))
           }
-          response = validateOnly.map(({id, codigo}) => ({id, codigo}))
         }
         this.$emit('save', { data: response, step: this.step.id })
       }

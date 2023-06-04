@@ -25,7 +25,10 @@ export const pacientStore = {
     step: {
       id: 0,
       nombre: '',
+      idUpdated: 0,
+      is_new: true,
       preguntas: [],
+      notChecked: false,
     },
   },
   mutations: {
@@ -64,7 +67,11 @@ export const pacientStore = {
       };
     },
     setStep(state, payload) {
-      state.step = payload[0];
+      const { not_posee, ...restPayload } = payload;
+      state.step = {
+        ...restPayload,
+        notChecked: not_posee,
+      };
     },
   },
   actions: {
@@ -143,12 +150,15 @@ export const pacientStore = {
         commit('utils/setLoader', false, { root: true });
       }
     },
-    async saveStepPaciente({ commit }, { paciente_id, step_id, forms }) {
+    async saveStepPaciente({ commit, state }, { paciente_id, step_id, forms }) {
       try {
         commit('setLoading', true);
+        const { is_new, idUpdated } = state.step;
         commit('utils/setLoader', true, { root: true });
         await authApi.post(`/api/pacientes/step`, {
+          is_new,
           preguntas: forms,
+          id: Number(idUpdated),
           step_id: Number(step_id),
           paciente_id: Number(paciente_id),
         });
