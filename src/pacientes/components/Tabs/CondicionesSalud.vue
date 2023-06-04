@@ -13,28 +13,31 @@
     </v-row>
     <v-form ref="form" v-model="valid" lazy-validation @submit="handlerSubmit">
       <v-row v-if="!notPoseeAntecedentes">
-        <v-col v-for="(item, index) in inputs" :key="index" :cols="item.span || 3">
-          <v-radio-group
-            row
-            :key="item.key"
-            v-model="item.value"
-            :label="item.label"
-            class="d-flex justify-space-between"
-            @change="() => handlerChange(item)"
-          >
-            <v-radio :value="true" label="Si" />
-            <v-radio :value="false" label="No" />
-          </v-radio-group>
-          <v-row v-if="item.show">
-            <v-col cols="12">
-              <v-textarea
-                outlined
-                rows="3"
-                label="Especifique: *"
-                v-model="item.description"
-                :rules="[(v) => !!v || 'Descripcion requerida']"
-              />
+        <v-col v-for="(item, index) in step.preguntas" :key="index" :cols="item.span || 6">
+          <v-row>
+            <v-col cols="12" class="d-flex justify-end">
+              <v-radio-group
+                row
+                :key="item.id"
+                v-model="item.valor"
+                :label="item.nombrePregunta"
+                @change="() => handlerChange(item)"
+              >
+                <v-radio value="1" label="Si" />
+                <v-radio value="2" label="No" />
+              </v-radio-group>
             </v-col>
+            <v-row v-if="item.show" class="d-flex justify-end">
+              <v-col cols="10">
+                <v-textarea
+                  outlined
+                  rows="3"
+                  label="Especifique: *"
+                  v-model="item.inputs.description"
+                  :rules="[(v) => !!v || 'Descripcion requerida']"
+                />
+              </v-col>
+            </v-row>
           </v-row>
         </v-col>
       </v-row>
@@ -48,27 +51,21 @@
 </template>
 
 <script lang="js">
-const inputs = ([
-  { key: 1, label: 'Reacciones adversas a medicamentos', value: false, span: 4 },
-  { key: 2, label: 'Cirugias Realizadas', value: false, span: 3 },
-  { key: 3, label: 'Alergias', value: false, span:2},
-  { key: 3, label: 'Tiene alguna discapacidad?', value: false, span: 3 },
-])
+import { mapState } from 'vuex';
 
 export default {
   name: 'CondicionSalud',
   data: () => ({
-    inputs,
-    years : [],
     valid: false,
     notPoseeAntecedentes: false,
   }),
   methods: {
     handlerSubmit(e) {
       e.preventDefault()
+      let response = []
       if(this.$refs.form.validate()) {
         if(!this.notPoseeAntecedentes) {
-          let validateOnly = this.inputs.some((item) => item.value)
+          let validateOnly = this.step.preguntas.filter(({ show }) => show);
           if(!validateOnly) {
             this.$store.commit('utils/setAlert', {
               show: true,
@@ -77,21 +74,26 @@ export default {
             })
             return;
           }
-          console.log(this.inputs)
+          response = validateOnly.map(({codigo, id, inputs}) => ({ id, codigo, inputs }))
+        } else {
+          response = [{ id: 27, codigo: 'P27' }]
         }
+        this.$emit('save', { data: response, step: this.step.id })
       }
     },
     handlerChange(item) {
-      item.show = item.value
+      item.show = !item.show
       if(item.show) {
-        item.description = null;
+        item.inputs = {
+          description: null
+        }
       } else {
-        delete item.description;
+        delete item.inputs;
       }
     }
   },
-  created() {
-    this.years = this.yearsSelect()
-  }
+  computed:{
+    ...mapState('pacient', ['step']),
+  },
 }
 </script>

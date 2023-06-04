@@ -13,36 +13,44 @@
     </v-row>
     <v-form ref="form" v-model="valid" lazy-validation @submit="handlerSubmit">
       <v-row v-if="!notPoseeAntecedentes">
-        <v-col v-for="(item, index) in inputs" :key="index" :cols="item.span || 3">
-          <v-radio-group
-            row
-            :key="item.key"
-            v-model="item.value"
-            :label="item.label"
-            class="d-flex justify-space-between"
-            @change="() => handlerChange(item)"
-          >
-            <v-radio :value="true" label="Si" />
-            <v-radio :value="false" label="No" />
-          </v-radio-group>
-          <v-row v-if="item.show">
-            <v-col cols="12">
-              <v-select
-                outlined
-                :items="years"
-                :rules="[(v) => !!v || 'El año es requerido']"
-                v-model="item.inputs.year"
-                label="Año de inicio: *"
-              />
+        <v-col
+          v-for="(item, index) in step.preguntas"
+          :key="index"
+          :cols="item.span || 6"
+          class="d-flex justify-end"
+        >
+          <v-row>
+            <v-col cols="12" class="d-flex justify-end">
+              <v-radio-group
+                row
+                :key="item.id"
+                v-model="item.valor"
+                :label="item.nombrePregunta"
+                @change="() => handlerChange(item)"
+              >
+                <v-radio value="1" label="Si" />
+                <v-radio value="2" label="No" />
+              </v-radio-group>
             </v-col>
-            <v-col cols="12">
-              <v-text-field
-                outlined
-                v-model="item.inputs.text"
-                label="Medicamento que toma: *"
-                :rules="[(v) => !!v || 'Medicamento es requerido']"
-              />
-            </v-col>
+            <v-row v-if="item.show" class="d-flex justify-end">
+              <v-col cols="4">
+                <v-select
+                  outlined
+                  :items="years"
+                  v-model="item.inputs.year"
+                  :rules="[(v) => !!v || 'El año es requerido']"
+                  label="Año de inicio: *"
+                />
+              </v-col>
+              <v-col cols="7">
+                <v-text-field
+                  outlined
+                  v-model="item.inputs.text"
+                  label="Medicamento que toma: *"
+                  :rules="[(v) => !!v || 'Medicamento es requerido']"
+                />
+              </v-col>
+            </v-row>
           </v-row>
         </v-col>
       </v-row>
@@ -56,29 +64,11 @@
 </template>
 
 <script lang="js">
-const inputs = ([
-  { key: 1, label: 'Hipertensión Arterial', value: false },
-  { key: 2, label: 'Diabetes Mellitus', value: false },
-  { key: 3, label: 'Hipertiroidismo', value: false },
-  { key: 4, label: 'Hipotiroidismo', value: false },
-  { key: 5, label: 'Epilepsia', value: false },
-  { key: 7, label: 'Enfermedad Renal Crónica (ERC)', value: false },
-  { key: 8, label: 'Colagenopatías', value: false},
-  { key: 10, label: 'Hepatitis B', value: false },
-  { key: 11, label: 'Hepatitis C', value: false },
-  { key: 12, label: 'Obesidad', value: false },
-  { key: 14, label: 'Cancer Gástrico', value: false },
-  { key: 15, label: 'Cancer Colorrectal', value: false },
-  { key: 16, label: 'Cancer de próstata', value: false },
-  { key: 13, label: 'Infecciones de Transmisión Sexual', value: false, span: 4 },
-  { key: 6, label: 'Enfermedad pulmonar obstructiva crónica (EPOC)', value: false, span: 4 },
-  { key: 9, label: 'Otras enfermedades cardiovasculares (Excepto HTA)', value: false, span: 4 },
-])
+import { mapState } from 'vuex'
 
 export default {
   name: 'AntecendesPersonales',
   data: () => ({
-    inputs,
     years : [],
     valid: false,
     notPoseeAntecedentes: false,
@@ -86,9 +76,10 @@ export default {
   methods: {
     handlerSubmit(e) {
       e.preventDefault()
+      let response = [];
       if(this.$refs.form.validate()) {
         if(!this.notPoseeAntecedentes) {
-          let validateOnly = this.inputs.some((item) => item.value)
+          let validateOnly = this.step.preguntas.filter(({ show }) => show);
           if(!validateOnly) {
             this.$store.commit('utils/setAlert', {
               show: true,
@@ -97,12 +88,15 @@ export default {
             })
             return;
           }
-          console.log(this.inputs)
+          response = validateOnly.map(({codigo, id, inputs}) => ({ id, codigo, inputs }))
+        } else {
+          response = [{ id: 27, codigo: 'P27' }]
         }
+        this.$emit('save', { data: response, step: this.step.id })
       }
     },
     handlerChange(item) {
-      item.show = item.value
+      item.show = !item.show
       if(item.show) {
         item.inputs = {
           year: null,
@@ -113,7 +107,10 @@ export default {
       }
     }
   },
-  created() {
+  computed:{
+    ...mapState('pacient', ['step']),
+  },
+  mounted() {
     this.years = this.yearsSelect()
   }
 }

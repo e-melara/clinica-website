@@ -17,7 +17,7 @@
             <v-tab-item v-for="(item, index) in items" :key="index">
               <v-card flat>
                 <v-card-text>
-                  <component :is="item.component"></component>
+                  <component @save="save" :is="item.component"></component>
                 </v-card-text>
               </v-card>
             </v-tab-item>
@@ -34,6 +34,7 @@ import CondicionesSalud from "../components/Tabs/CondicionesSalud.vue";
 import UsoDeAlcoholDrogas from "../components/Tabs/UsoDeAlcoholDrogas.vue";
 import AntecendesPersonales from "../components/Tabs/AntecendesPersonales.vue";
 import AntecendesFamiliares from "../components/Tabs/AntecendesFamiliares.vue";
+import { mapActions } from "vuex";
 
 const items = [{
   text: 'Antecendes Familiares',
@@ -54,7 +55,20 @@ export default {
   data: () => ({
     current: null,
     items,
-  })
+  }),
+  methods: {
+    ...mapActions('pacient', ['getHistorial', 'saveStepPaciente']),
+    save({step, data}) {
+      const { id } = this.$route.params;
+      this.saveStepPaciente({ paciente_id: id, step_id: step, forms: data})
+    }
+  },
+  watch: {
+    current(val) {
+      const { id } = this.$route.params;
+      this.getHistorial({step_id: (val + 1), paciente_id: id });
+    },
+  },
 };
 </script>
 

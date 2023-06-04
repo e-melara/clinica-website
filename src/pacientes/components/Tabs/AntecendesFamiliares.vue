@@ -15,19 +15,19 @@
       <v-row v-if="!notPoseeAntecedentes">
         <v-col
           class="d-flex justify-end"
-          v-for="(item, index) in inputs"
+          v-for="(item, index) in step.preguntas"
           :key="index"
           :cols="item.span || 6"
         >
           <v-radio-group
-            v-model="item.value"
-            :key="item.key"
+            v-model="item.valor"
+            :key="item.id"
             row
-            :label="item.label"
+            :label="item.nombrePregunta"
             class="d-flex justify-space-between"
           >
-            <v-radio :value="true" label="Si" />
-            <v-radio :value="false" label="No" />
+            <v-radio value="1" label="Si" />
+            <v-radio value="2" label="No" />
           </v-radio-group>
         </v-col>
       </v-row>
@@ -41,31 +41,21 @@
 </template>
 
 <script lang="js">
-const inputs = ([
-  { key: 1, label: 'Hipertensión Arterial', value: false },
-  { key: 2, label: 'Diabetes Mellitus', value: false },
-  { key: 3, label: 'Asma bronquial', value: false },
-  { key: 10, label: 'Cancer de próstata', value: false },
-  { key: 4, label: 'Trastornos mentales y de comportamiento', value: false },
-  { key: 5, label: 'Enfermedad pulmonar obstructiva crónica (EPOC)', value: false },
-  { key: 6, label: 'Enfermedad Renal Crónica (ERC)', value: false },
-  { key: 7, label: 'Otras enfermedades cardiovasculares (Excepto HTA)', value: false},
-  { key: 8, label: 'Cancer Gástrico', value: false },
-  { key: 9, label: 'Cancer Colorrectal', value: false },
-])
+import { mapState } from 'vuex'
+
 export default {
   name: 'AntecendesFamiliares',
   data: () => ({
-    inputs,
     valid: false,
     notPoseeAntecedentes: false,
   }),
   methods: {
     handlerSubmit(e) {
       e.preventDefault()
+      let response = [];
       if(!this.notPoseeAntecedentes) {
-        let validateOnly = this.inputs.some((item) => item.value)
-        if(!validateOnly) {
+        let validateOnly = this.step.preguntas.filter(({valor}) => valor === '1')
+        if(validateOnly.length === 0 ) {
           this.$store.commit('utils/setAlert', {
             show: true,
             type: 'error',
@@ -73,9 +63,15 @@ export default {
           })
           return;
         }
-        console.log(this.inputs)
+        response = validateOnly.map(({id, codigo}) => ({id, codigo}))
+      } else {
+        response = [{ id: 27, codigo: 'P27' }]
       }
+      this.$emit('save', { data: response, step: this.step.id })
     },
-  }
+  },
+  computed:{
+    ...mapState('pacient', ['step']),
+  },
 }
 </script>

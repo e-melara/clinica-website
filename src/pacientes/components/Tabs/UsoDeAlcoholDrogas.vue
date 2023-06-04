@@ -2,16 +2,21 @@
   <v-container fluid>
     <v-form ref="form" v-model="valid" lazy-validation @submit="handlerSubmit">
       <v-row v-if="!notPoseeAntecedentes">
-        <v-col v-for="(item, index) in inputs" :key="index" :cols="item.span || 3">
+        <v-col
+          v-for="(item, index) in step.preguntas"
+          :key="index"
+          :cols="item.span || 6"
+          class="d-flex justify-end"
+        >
           <v-radio-group
             row
             :key="item.key"
-            v-model="item.value"
-            :label="item.label"
+            v-model="item.valor"
+            :label="item.nombrePregunta"
             class="d-flex justify-space-between"
           >
-            <v-radio :value="true" label="Si" />
-            <v-radio :value="false" label="No" />
+            <v-radio value="1" label="Si" />
+            <v-radio value="2" label="No" />
           </v-radio-group>
         </v-col>
       </v-row>
@@ -25,27 +30,21 @@
 </template>
 
 <script lang="js">
-const inputs = ([
-  { key: 1, label: 'Etilista', value: false },
-  { key: 2, label: 'Tabaquita', value: false },
-  { key: 3, label: 'Drogadicción', value: false },
-  { key: 4, label: 'Otros', value: false },
-])
+import { mapState } from 'vuex';
 
 export default {
   name: 'UsoDeAlcoholDrogas',
   data: () => ({
-    inputs,
-    years : [],
     valid: false,
     notPoseeAntecedentes: false,
   }),
   methods: {
     handlerSubmit(e) {
       e.preventDefault()
+      let response = [];
       if(this.$refs.form.validate()) {
         if(!this.notPoseeAntecedentes) {
-          let validateOnly = this.inputs.some((item) => item.value)
+          let validateOnly = this.step.preguntas.filter(({valor}) => valor === '1')
           if(!validateOnly) {
             this.$store.commit('utils/setAlert', {
               show: true,
@@ -54,13 +53,14 @@ export default {
             })
             return;
           }
-          console.log(this.inputs)
+          response = validateOnly.map(({id, codigo}) => ({id, codigo}))
         }
+        this.$emit('save', { data: response, step: this.step.id })
       }
     }
   },
-  created() {
-    this.years = this.yearsSelect()
+  computed:{
+    ...mapState('pacient', ['step']),
   }
 }
 </script>

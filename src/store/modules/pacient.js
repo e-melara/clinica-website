@@ -14,12 +14,18 @@ export const pacientStore = {
     municipios: [],
     loading: false,
     departamentos: [],
-
     list: [],
     pagination: {
       total: 0,
       pagina: 1,
       cantidad_por_pagina: 10,
+    },
+
+    // step historial
+    step: {
+      id: 0,
+      nombre: '',
+      preguntas: [],
     },
   },
   mutations: {
@@ -56,6 +62,9 @@ export const pacientStore = {
         pagina: meta.pagina,
         cantidad_por_pagina: meta.cantidad_por_pagina,
       };
+    },
+    setStep(state, payload) {
+      state.step = payload[0];
     },
   },
   actions: {
@@ -117,6 +126,37 @@ export const pacientStore = {
         commit('setLoading', false);
         commit('utils/setLoader', false, { root: true });
         return Promise.reject(error);
+      }
+    },
+
+    // historial pacientes
+    async getHistorial({ commit }, { step_id, paciente_id }) {
+      try {
+        commit('setLoading', true);
+        commit('utils/setLoader', true, { root: true });
+        const { data } = await authApi.get(`/api/pacientes/step/${step_id}/${paciente_id}`);
+        commit('setStep', data);
+      } catch (error) {
+        console.log({ error });
+      } finally {
+        commit('setLoading', false);
+        commit('utils/setLoader', false, { root: true });
+      }
+    },
+    async saveStepPaciente({ commit }, { paciente_id, step_id, forms }) {
+      try {
+        commit('setLoading', true);
+        commit('utils/setLoader', true, { root: true });
+        await authApi.post(`/api/pacientes/step`, {
+          preguntas: forms,
+          step_id: Number(step_id),
+          paciente_id: Number(paciente_id),
+        });
+      } catch (error) {
+        console.log({ error });
+      } finally {
+        commit('setLoading', false);
+        commit('utils/setLoader', false, { root: true });
       }
     },
   },
