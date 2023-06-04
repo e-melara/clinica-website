@@ -6,13 +6,13 @@
       </v-col>
       <v-col cols="12">
         <v-checkbox
-          v-model="notPoseeAntecedentes"
+          v-model="step.notChecked"
           label="No posee familiares con antecedentes para estas patologías"
         />
       </v-col>
     </v-row>
     <v-form ref="form" v-model="valid" lazy-validation @submit="handlerSubmit">
-      <v-row v-if="!notPoseeAntecedentes">
+      <v-row v-if="!step.notChecked">
         <v-col
           class="d-flex justify-end"
           v-for="(item, index) in step.preguntas"
@@ -47,13 +47,12 @@ export default {
   name: 'AntecendesFamiliares',
   data: () => ({
     valid: false,
-    notPoseeAntecedentes: false,
   }),
   methods: {
     handlerSubmit(e) {
       e.preventDefault()
       let response = [];
-      if(!this.notPoseeAntecedentes) {
+      if(!this.step.notChecked) {
         let validateOnly = this.step.preguntas.filter(({valor}) => valor === '1')
         if(validateOnly.length === 0 ) {
           this.$store.commit('utils/setAlert', {

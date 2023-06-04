@@ -6,13 +6,13 @@
       </v-col>
       <v-col cols="12">
         <v-checkbox
-          v-model="notPoseeAntecedentes"
+          v-model="step.notChecked"
           label="No posee ninguna condición de salud especial"
         />
       </v-col>
     </v-row>
     <v-form ref="form" v-model="valid" lazy-validation @submit="handlerSubmit">
-      <v-row v-if="!notPoseeAntecedentes">
+      <v-row v-if="!step.notChecked">
         <v-col v-for="(item, index) in step.preguntas" :key="index" :cols="item.span || 6">
           <v-row>
             <v-col cols="12" class="d-flex justify-end">
@@ -56,15 +56,14 @@ import { mapState } from 'vuex';
 export default {
   name: 'CondicionSalud',
   data: () => ({
-    valid: false,
-    notPoseeAntecedentes: false,
+    valid: false
   }),
   methods: {
     handlerSubmit(e) {
       e.preventDefault()
       let response = []
       if(this.$refs.form.validate()) {
-        if(!this.notPoseeAntecedentes) {
+        if(!this.step.notChecked) {
           let validateOnly = this.step.preguntas.filter(({ show }) => show);
           if(validateOnly.length === 0) {
             this.$store.commit('utils/setAlert', {
