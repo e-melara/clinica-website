@@ -23,7 +23,6 @@ export default {
   },
   async created() {
     await this.existAuthToken();
-    console.log('llamando desde layout mounted');
   },
 };
 </script>

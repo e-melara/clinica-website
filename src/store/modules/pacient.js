@@ -79,12 +79,10 @@ export const pacientStore = {
       try {
         commit('utils/setLoader', true, { root: true });
         const { data } = await authApi.get(
-          `/api/pacientes?pagina=${pagina}&cantidad_por_pagina=${cantidad_por_pagina}&q=${q}&orden=DESC`
+          `/api/pacientes?pagina=${pagina}&cantidad_por_pagina=${cantidad_por_pagina}&q=${q}&orden=DESC`,
         );
         commit('utils/setLoader', false, { root: true });
         commit('setList', data);
-      } catch (error) {
-        console.log({ error });
       } finally {
         commit('utils/setLoader', false, { root: true });
       }
@@ -101,8 +99,6 @@ export const pacientStore = {
         ]);
         commit('settearData', params);
         return Promise.resolve();
-      } catch (error) {
-        console.log({ error });
       } finally {
         commit('utils/setLoader', false, { root: true });
       }
@@ -114,8 +110,6 @@ export const pacientStore = {
         commit('utils/setLoader', true, { root: true });
         const { data } = await authApi.get(`/api/customs/departamentos/${id}`);
         commit('setMunicipio', data);
-      } catch (error) {
-        console.log({ error });
       } finally {
         commit('setLoading', false);
         commit('utils/setLoader', false, { root: true });
@@ -143,8 +137,6 @@ export const pacientStore = {
         commit('utils/setLoader', true, { root: true });
         const { data } = await authApi.get(`/api/pacientes/step/${step_id}/${paciente_id}`);
         commit('setStep', data);
-      } catch (error) {
-        console.log({ error });
       } finally {
         commit('setLoading', false);
         commit('utils/setLoader', false, { root: true });
@@ -162,11 +154,21 @@ export const pacientStore = {
           step_id: Number(step_id),
           paciente_id: Number(paciente_id),
         });
-      } catch (error) {
-        console.log({ error });
       } finally {
         commit('setLoading', false);
         commit('utils/setLoader', false, { root: true });
+      }
+    },
+    async getFindOne({ commit }, id) {
+      try {
+        commit('setLoading', true);
+        commit('utils/setLoader', true, { root: true });
+        const { data } = await authApi.get(`/api/pacientes/${id}`);
+        return Promise.resolve(data);
+      } catch (e) {
+        commit('setLoading', false);
+        commit('utils/setLoader', false, { root: true });
+        return Promise.reject(e);
       }
     },
   },
