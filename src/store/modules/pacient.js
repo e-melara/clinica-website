@@ -79,7 +79,7 @@ export const pacientStore = {
       try {
         commit('utils/setLoader', true, { root: true });
         const { data } = await authApi.get(
-          `/api/pacientes?pagina=${pagina}&cantidad_por_pagina=${cantidad_por_pagina}&q=${q}&orden=DESC`,
+          `/api/pacientes?pagina=${pagina}&cantidad_por_pagina=${cantidad_por_pagina}&q=${q}&orden=DESC`
         );
         commit('utils/setLoader', false, { root: true });
         commit('setList', data);
@@ -98,6 +98,7 @@ export const pacientStore = {
           authApi.get('/api/customs/contactos'),
         ]);
         commit('settearData', params);
+        commit('utils/setLoader', false, { root: true });
         return Promise.resolve();
       } finally {
         commit('utils/setLoader', false, { root: true });
@@ -164,6 +165,8 @@ export const pacientStore = {
         commit('setLoading', true);
         commit('utils/setLoader', true, { root: true });
         const { data } = await authApi.get(`/api/pacientes/${id}`);
+        commit('setLoading', false);
+        commit('utils/setLoader', false, { root: true });
         return Promise.resolve(data);
       } catch (e) {
         commit('setLoading', false);

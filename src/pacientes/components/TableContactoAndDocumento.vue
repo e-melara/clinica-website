@@ -120,6 +120,9 @@ export default {
     },
     getItems() {
       return this.list;
+    },
+    setItems(items) {
+      this.list = items;
     }
   }
 }

@@ -1,6 +1,7 @@
 <template>
   <v-app>
     <v-main class="pa-0 ma-0 myFont">
+      <router-view :key="$route.fullPath" />
       <v-fade-transition>
         <v-snackbar
           v-model="alert().show"
@@ -30,7 +31,6 @@
           </template>
         </v-snackbar>
       </v-fade-transition>
-      <router-view :key="$route.fullPath" />
     </v-main>
   </v-app>
 </template>

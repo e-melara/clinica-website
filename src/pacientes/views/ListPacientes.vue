@@ -1,82 +1,104 @@
 <template>
   <v-container fluid>
     <v-row>
-      <v-col cols='12'>
+      <v-col cols="12">
         <v-card>
           <v-card-title>
             <v-container fluid>
               <v-row>
-                <v-col cols='12'>
+                <v-col cols="12">
                   <h3>Listado de Pacientes</h3>
                 </v-col>
               </v-row>
             </v-container>
           </v-card-title>
           <App-Table
-            :headers='headers'
-            :data='list'
-            keyItem='name'
-            :loading='false'
-            :total='pagination.total'
-            @update:options='updatePagination'
+            :headers="headers"
+            :data="list"
+            keyItem="name"
+            :loading="false"
+            :total="pagination.total"
+            @update:options="updatePagination"
           >
             <template #top>
               <v-container fluid>
                 <v-row>
-                  <v-col cols='2'>
-                    <v-btn dark color='primary' large block @click='openModalAdd'>
+                  <v-col cols="2">
+                    <v-btn dark color="primary" large block @click="openModalAdd">
                       <v-icon dark> mdi-plus</v-icon>
                       Agregar Paciente
                     </v-btn>
                   </v-col>
 
-                  <v-col cols='4' offset='6'>
+                  <v-col cols="4" offset="6">
                     <v-text-field
-                      v-model='q'
+                      v-model="q"
                       outlined
                       single-line
                       hide-details
-                      @keydown='onSearch'
-                      append-icon='mdi-magnify'
-                      label='Buscar paciente'
+                      @keydown="onSearch"
+                      append-icon="mdi-magnify"
+                      label="Buscar paciente"
                     />
                   </v-col>
                 </v-row>
               </v-container>
             </template>
-            <template #options='{ item }'>
-              <v-row class='d-flex justify-end'>
-                <v-btn class='mx-2' dark outlined color='indigo' @click='addHistorialClinico(item)'>
-                  <v-icon dark> mdi-plus</v-icon>
-                  Historial clinico
-                </v-btn>
-                <v-btn class='mx-2' text color='primary' @click='editPaciente(item)'>
-                  <v-icon dark> mdi-pencil-plus-outline</v-icon>
-                  Editar
-                </v-btn>
-              </v-row>
+            <template #options="{ item }">
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    class="mx-2"
+                    dark
+                    v-bind="attrs"
+                    v-on="on"
+                    outlined
+                    color="indigo"
+                    @click="addHistorialClinico(item)"
+                  >
+                    <v-icon dark> mdi-plus</v-icon>
+                  </v-btn>
+                </template>
+                <span>Agregar o editar el historial clinico</span>
+              </v-tooltip>
+
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    v-bind="attrs"
+                    v-on="on"
+                    class="mx-2"
+                    text
+                    color="primary"
+                    @click="editPaciente(item)"
+                  >
+                    <v-icon dark> mdi-pencil-plus-outline</v-icon>
+                  </v-btn>
+                </template>
+                <span>Editar paciente</span>
+              </v-tooltip>
             </template>
           </App-Table>
         </v-card>
       </v-col>
     </v-row>
     <ModalAddPaciente
-      v-if='open'
-      :dialog='open'
-      :generos='generos'
-      :contactos='contactos'
-      :municipios='municipios'
-      :documentos='documentos'
-      @closeOrSave='onCloseOrSave'
-      :departamentos='departamentos'
-      @change-departamento='onChangeDepartamento'
-      :isEdit='isEdit'
-      :dataEdit='dataEdit'
+      v-if="open"
+      :dialog="open"
+      :generos="generos"
+      :contactos="contactos"
+      :municipios="municipios"
+      :documentos="documentos"
+      @closeOrSave="onCloseOrSave"
+      :departamentos="departamentos"
+      @change-departamento="onChangeDepartamento"
+      :isEdit="isEdit"
+      :dataEdit="dataEdit"
     />
   </v-container>
 </template>
 
-<script lang='js'>
+<script lang="js">
 import { mapMutations, mapState, mapActions } from 'vuex';
 import ModalAddPaciente from '../components/ModalAddPaciente.vue';
 
@@ -147,10 +169,15 @@ export default {
         this.setOpen(false);
         return;
       }
-      this.save({ ...forms }).then(() => {
+      if(type === 'save') {
+        this.save({ ...forms }).then(() => {
+          this.setOpen(false);
+          this.onSearch();
+        });
+      } else {
         this.setOpen(false);
-        this.onSearch();
-      });
+        console.log(forms)
+      }
     },
     onSearch() {
       if (this.setTimeout) {
@@ -169,12 +196,10 @@ export default {
       this.isEdit = true;
       const { id } = paciente;
       try {
-        this.getInfo().then(() => {
+        await Promise.all([this.getInfo(), this.getFindOne(+id)]).then((data) => {
+          this.dataEdit = data[1];
           this.isEdit = true;
-          this.getFindOne(+id).then((data) => {
-            this.dataEdit = data;
-            this.setOpen(true);
-          });
+          this.setOpen(true);
         });
       } catch (e) {
         this.$store.commit('utils/setAlert', {

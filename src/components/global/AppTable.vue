@@ -104,7 +104,7 @@ export default {
             text: titleOptions,
             value: 'options',
             sortable: false,
-            align: 'center',
+            align: 'right',
           },
         ];
       }
