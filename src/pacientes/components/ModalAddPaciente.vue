@@ -8,7 +8,7 @@
         <v-toolbar-title>{{ isEdit ? 'Editar' : 'Agregar' }} paciente</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-btn :disabled="valid" dark text @click="validateForm">{{
+          <v-btn :disabled="!valid" dark text @click="validateForm">{{
             isEdit ? 'Editar' : 'Guardar'
           }}</v-btn>
         </v-toolbar-items>
