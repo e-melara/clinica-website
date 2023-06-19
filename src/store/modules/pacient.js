@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import authApi from '../../plugins/axios';
+import authApi, { trycatch } from '../../plugins/axios';
 import { calculaEdad } from '../../plugins/utils';
 
 export const pacientStore = {
@@ -129,6 +129,10 @@ export const pacientStore = {
         commit('utils/setLoader', false, { root: true });
         return Promise.reject(error);
       }
+    },
+    async edit({commit}, {forms, id}) {
+      const url = `/api/pacientes/${id}`
+      return await trycatch(url, forms, commit, 'put')
     },
 
     // historial pacientes

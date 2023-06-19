@@ -53,4 +53,25 @@ authApi.interceptors.response.use(
   }
 );
 
+export const trycatch = async (url, params, commit, method = 'get') => {
+  const response = {
+    promise: undefined,
+    error: false,
+  }
+  try {
+    commit('setLoading', true)
+    commit('utils/setLoader', true, { root: true })
+    const { data } = await authApi[method.toLowerCase()](url, params)
+    response.promise = Promise.resolve(data)  
+   } catch (error) {
+    response.promise = Promise.reject(error)
+    response.error = true
+  } finally {
+    commit('setLoading', false)
+    commit('utils/setLoader', false, { root: true })
+  }
+
+  return response
+}
+
 export default authApi;

@@ -145,7 +145,7 @@ export default {
   },
   methods: {
     ...mapMutations('pacient', ['setOpen']),
-    ...mapActions('pacient', ['getInfo', 'getMunicipios', 'save', 'getList', 'getFindOne']),
+    ...mapActions('pacient', ['getInfo', 'getMunicipios', 'save', 'edit', 'getList', 'getFindOne']),
     addHistorialClinico({ id }) {
       this.$router.replace({ name: 'patients-historial-clinico', params: { id } });
     },
@@ -175,8 +175,12 @@ export default {
           this.onSearch();
         });
       } else {
-        this.setOpen(false);
-        console.log(forms)
+        this.edit({ forms: {...forms}, id: 14 }).then(result => {
+          console.log(result)
+          this.setOpen(false);
+        }).catch(error => {
+            console.log(error)
+        })
       }
     },
     onSearch() {
