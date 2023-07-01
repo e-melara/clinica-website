@@ -276,6 +276,7 @@ export default {
       const { departamento_id, municipio_id, persona, paciente, contactos, documentos, genero } = this.dataEdit;
       this.$emit('change-departamento', departamento_id);
       const forms = {
+        persona_id: persona.id,
         genero: genero.id,
         nombre: persona.nombre,
         municipio: municipio_id,

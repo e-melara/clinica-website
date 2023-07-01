@@ -130,9 +130,9 @@ export const pacientStore = {
         return Promise.reject(error);
       }
     },
-    async edit({commit}, {forms, id}) {
-      const url = `/api/pacientes/${id}`
-      return await trycatch(url, forms, commit, 'put')
+    async edit({ commit }, { forms, id }) {
+      const url = `/api/pacientes/${id}`;
+      return await trycatch(url, forms, commit, 'put');
     },
 
     // historial pacientes

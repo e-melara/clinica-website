@@ -149,7 +149,7 @@ export default {
     addHistorialClinico({ id }) {
       this.$router.replace({ name: 'patients-historial-clinico', params: { id } });
     },
-    updatePagination({ page, itemsPerPage }) {
+    updatePagination({ page = 1, itemsPerPage }) {
       this.getList({
         pagina: page,
         cantidad_por_pagina: itemsPerPage,
@@ -175,9 +175,13 @@ export default {
           this.onSearch();
         });
       } else {
-        this.edit({ forms: {...forms}, id: 14 }).then(result => {
-          console.log(result)
+        const { persona_id, ...data } = forms;
+        this.edit({ forms: data, id: persona_id }).then(() => {
           this.setOpen(false);
+          this.updatePagination({
+            page: this.pagination.pagina,
+            itemsPerPage: this.pagination.cantidad_por_pagina,
+          });
         }).catch(error => {
             console.log(error)
         })
